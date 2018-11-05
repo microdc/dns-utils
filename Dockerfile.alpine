@@ -1,8 +1,9 @@
 FROM alpine:3.7
 
-RUN apk add --no-cache bind-tools
+RUN apk add --no-cache bind-tools python3
 
 COPY entrypoint.sh /
+COPY entrypoint.py /
 
 ENTRYPOINT ["/entrypoint.sh"]
 CMD ["google.com"]
