@@ -1,6 +1,6 @@
 FROM alpine:3.7
 
-RUN apk add --no-cache bind-tools python3 conntrack-tools
+RUN apk add --no-cache bind-tools python3 conntrack-tools tcpdump iproute2
 
 COPY entrypoint.sh /
 COPY entrypoint.py /
