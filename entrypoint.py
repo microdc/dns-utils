@@ -4,6 +4,8 @@ import time
 import socket
 import sys
 
+socket.setdefaulttimeout(1)
+
 def lookup_host():
     print(socket.gethostbyname(sys.argv[1]))
 
