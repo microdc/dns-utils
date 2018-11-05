@@ -1,6 +1,6 @@
 #!/bin/sh
 
 while true; do
-  dig $1
+  dig "$@"
   sleep 5
 done
