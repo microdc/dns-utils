@@ -6,4 +6,5 @@ RUN \
 
 COPY entrypoint.sh /
 
-ENTRYPOINT /entrypoint.sh
+ENTRYPOINT ["/entrypoint.sh"]
+CMD ["google.com"]

@@ -1,6 +1,6 @@
 #!/bin/sh
 
 while true; do
-  dig google.com
+  dig $1
   sleep 5
 done
