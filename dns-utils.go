@@ -53,6 +53,18 @@ func lookup(domain string) {
 	fmt.Println(duration)
 }
 
+func sampleLookups(domain string, interval int) {
+	go func() {
+		for i := 1; ; i++ {
+
+			go lookup(domain)
+			if i%interval == 0 {
+				time.Sleep(time.Second * 5)
+			}
+		}
+	}()
+}
+
 var domain string
 var interval int
 
@@ -65,15 +77,7 @@ func main() {
 		usage()
 	}
 
-	go func(domain string) {
-		for i := 1; ; i++ {
-
-			go lookup(domain)
-			if i%interval == 0 {
-				time.Sleep(time.Second * 5)
-			}
-		}
-	}(domain)
+	sampleLookups(domain, interval)
 
 	http.Handle("/metrics", promhttp.Handler())
 	http.ListenAndServe(":2112", nil)
