@@ -10,12 +10,9 @@ import (
 	"time"
 
 	"github.com/prometheus/client_golang/prometheus"
+	"github.com/prometheus/client_golang/prometheus/promauto"
 	"github.com/prometheus/client_golang/prometheus/promhttp"
 )
-
-func init() {
-	prometheus.MustRegister(latencies)
-}
 
 func usage() {
 	fmt.Println("dns-utils -h for usage.")
@@ -23,10 +20,15 @@ func usage() {
 }
 
 var (
-	latencies = prometheus.NewHistogram(prometheus.HistogramOpts{
+	lookupLatencyHistogram = promauto.NewHistogram(prometheus.HistogramOpts{
 		Name:    "dns_lookup_latency",
 		Help:    "Latency of DNS lookups in seconds",
 		Buckets: []float64{1, 2, 5, 10},
+	})
+
+	failedLookupCounter = promauto.NewCounter(prometheus.CounterOpts{
+		Name: "dns_failed_lookups",
+		Help: "The total number of failed DNS lookups",
 	})
 )
 
@@ -41,11 +43,12 @@ func lookup(domain string) {
 	_, err := r.LookupHost(ctx, domain)
 	if err != nil {
 		fmt.Println("TIMEOUT")
+		failedLookupCounter.Inc()
 	}
 	t1 := time.Now()
 	duration := t1.Sub(t0)
 
-	latencies.Observe(duration.Seconds())
+	lookupLatencyHistogram.Observe(duration.Seconds())
 
 	fmt.Println(duration)
 }
