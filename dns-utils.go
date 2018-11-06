@@ -44,6 +44,5 @@ func main() {
 		}
 	}()
 
-	fmt.Scanln()
-	fmt.Println("done")
+	select {}
 }
