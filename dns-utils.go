@@ -65,7 +65,7 @@ func main() {
 		usage()
 	}
 
-	go func() {
+	go func(domain string) {
 		for i := 1; ; i++ {
 
 			go lookup(domain)
@@ -73,7 +73,7 @@ func main() {
 				time.Sleep(time.Second * 5)
 			}
 		}
-	}()
+	}(domain)
 
 	http.Handle("/metrics", promhttp.Handler())
 	http.ListenAndServe(":2112", nil)
