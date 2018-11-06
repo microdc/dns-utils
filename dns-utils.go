@@ -67,10 +67,12 @@ func sampleLookups(domain string, interval int) {
 
 var domain string
 var interval int
+var port int
 
 func main() {
 	flag.StringVar(&domain, "domain", "", "domain to resolve")
 	flag.IntVar(&interval, "interval", 10, "number of concurrent requests to send")
+	flag.IntVar(&port, "port", 8080, "port number to listen on (for prometheus scraping)")
 	flag.Parse()
 
 	if domain == "" {
@@ -80,5 +82,5 @@ func main() {
 	sampleLookups(domain, interval)
 
 	http.Handle("/metrics", promhttp.Handler())
-	http.ListenAndServe(":2112", nil)
+	http.ListenAndServe(fmt.Sprintf(":%d", port), nil)
 }
