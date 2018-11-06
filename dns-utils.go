@@ -56,7 +56,6 @@ func lookup(domain string) {
 func sampleLookups(domain string, interval int) {
 	go func() {
 		for i := 1; ; i++ {
-
 			go lookup(domain)
 			if i%interval == 0 {
 				time.Sleep(time.Second * 5)
