@@ -1,26 +1,53 @@
 package main
 
 import (
+	"context"
 	"flag"
 	"fmt"
 	"net"
+	"net/http"
 	"os"
 	"time"
+
+	"github.com/prometheus/client_golang/prometheus"
+	"github.com/prometheus/client_golang/prometheus/promhttp"
 )
+
+func init() {
+	prometheus.MustRegister(latencies)
+}
 
 func usage() {
 	fmt.Println("dns-utils -h for usage.")
 	os.Exit(1)
 }
 
+var (
+	latencies = prometheus.NewHistogram(prometheus.HistogramOpts{
+		Name:    "dns_lookup_latency",
+		Help:    "Latency of DNS lookups in seconds",
+		Buckets: []float64{1, 2, 5, 10},
+	})
+)
+
+const timeout = 5 * time.Second
+
 func lookup(domain string) {
+	ctx, cancel := context.WithTimeout(context.Background(), timeout)
+	defer cancel()
+
 	t0 := time.Now()
-	_, err := net.LookupHost(domain)
+	var r net.Resolver
+	_, err := r.LookupHost(ctx, domain)
 	if err != nil {
-		panic("error")
+		fmt.Println("TIMEOUT")
 	}
 	t1 := time.Now()
-	fmt.Printf("The call took %v to run.\n", t1.Sub(t0))
+	duration := t1.Sub(t0)
+
+	latencies.Observe(duration.Seconds())
+
+	fmt.Println(duration)
 }
 
 var domain string
@@ -37,12 +64,16 @@ func main() {
 
 	go func() {
 		for i := 1; ; i++ {
+
 			go lookup(domain)
 			if i%interval == 0 {
 				time.Sleep(time.Second * 5)
 			}
 		}
 	}()
+
+	http.Handle("/metrics", promhttp.Handler())
+	http.ListenAndServe(":2112", nil)
 
 	select {}
 }
