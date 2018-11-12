@@ -27,7 +27,7 @@ var (
 	})
 
 	failedLookupCounter = promauto.NewCounter(prometheus.CounterOpts{
-		Name: "dns_failed_lookups",
+		Name: "dns_lookup_error",
 		Help: "The total number of failed DNS lookups",
 	})
 )
