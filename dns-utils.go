@@ -38,19 +38,18 @@ func lookup(domain string) {
 	ctx, cancel := context.WithTimeout(context.Background(), timeout)
 	defer cancel()
 
-	t0 := time.Now()
+	start := time.Now()
 	var r net.Resolver
 	_, err := r.LookupHost(ctx, domain)
 	if err != nil {
-		fmt.Println("TIMEOUT")
 		failedLookupCounter.Inc()
 	}
-	t1 := time.Now()
-	duration := t1.Sub(t0)
+	end := time.Now()
+	duration := end.Sub(start)
 
 	lookupLatencyHistogram.Observe(duration.Seconds())
 
-	fmt.Println(duration)
+	fmt.Println(duration.Seconds())
 }
 
 func sampleLookups(domain string, interval int) {
