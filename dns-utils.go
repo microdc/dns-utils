@@ -21,9 +21,9 @@ func usage() {
 
 var (
 	lookupLatencyHistogram = promauto.NewHistogram(prometheus.HistogramOpts{
-		Name:    "dns_lookup_latency",
-		Help:    "Latency of DNS lookups in seconds",
-		Buckets: []float64{1, 2, 5, 10},
+		Name:    "dns_lookup_duration_seconds",
+		Help:    "Duration of DNS lookups in seconds",
+		Buckets: []float64{0.005, 0.01, 0.05, 0.1, 0.15, 0.20, 0.25, 0.3, 0.35, 0.4, 0.45, 0.5, 1, 2},
 	})
 
 	failedLookupCounter = promauto.NewCounter(prometheus.CounterOpts{
